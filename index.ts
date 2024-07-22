@@ -35,6 +35,10 @@ function init(persons: Person[]) {
   people.push(...persons);
 }
 
+function FindMinRelationLevel(personA: Person, personB: Person): number {
+  return findRelationLevel(personA, personB, people);
+}
+
 init([
   new Person(new Name("Grace", "Hopper"), new Address("", "New York")),
   new Person(new Name("Alan", "Turing"), new Address("", "Bletchley Park")),
@@ -43,13 +47,10 @@ init([
   new Person(new Name("Alan", "Turing"), new Address("", "Cambridge")),
 ]);
 
-function FindMinRelationLevel(personA: Person, personB: Person): number {
-  return findRelationLevel(personA, personB, people);
-}
-
 // Example of relationship between Alan Turing from Cambridge to Joan Clarke from London
 console.log(FindMinRelationLevel(people[4], people[3]));
 
+// Helpers
 function findRelationLevel(
   personA: Person,
   personB: Person,
@@ -68,17 +69,20 @@ function findRelationLevel(
   relations.add(personA);
 
   for (const person of people) {
-    if (!relations.has(person) && isDirectlyRelated(personA, person)) {
-      const result = findRelationLevel(
-        person,
-        personB,
-        people,
-        relations,
-        level + 1
-      );
-      if (result !== -1) {
-        return result;
-      }
+    if (!isDirectlyRelated(personA, person)) {
+      continue;
+    }
+
+    const result = findRelationLevel(
+      person,
+      personB,
+      people,
+      relations,
+      level + 1
+    );
+
+    if (result !== -1) {
+      return result;
     }
   }
 
