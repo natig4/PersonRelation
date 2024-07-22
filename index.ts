@@ -1,14 +1,8 @@
 const people: Person[] = [];
 
-interface Relation {
-  n: number;
-  person: Person;
-}
-
 class Person {
   FullName: Name;
   Address: Address;
-  Relations: Relation[] = [];
 
   constructor(FullName: Name, Address: Address) {
     this.FullName = FullName;
@@ -39,7 +33,6 @@ class Address {
 function init(persons: Person[]) {
   people.splice(0, people.length);
   people.push(...persons);
-  setRelations(people);
 }
 
 init([
@@ -50,55 +43,25 @@ init([
   new Person(new Name("Alan", "Turing"), new Address("", "Cambridge")),
 ]);
 
-function FindMinRelationLevel(personA: Person, personB: Person) {
-  const relation = personA.Relations.find(({ person }) => person === personB);
-
-  return relation?.n || -1;
+function FindMinRelationLevel(personA: Person, personB: Person): number {
+  return findRelationLevel(personA, personB, people);
 }
 
-// Example of relationship between Alan Turing from Cabmridge to Joan Clarke from London
+// Example of relationship between Alan Turing from Cambridge to Joan Clarke from London
 console.log(FindMinRelationLevel(people[4], people[3]));
 
-function setRelations(persons: Person[]) {
-  for (const person of persons) {
-    person.Relations = [];
-    for (const otherPerson of persons) {
-      if (person === otherPerson) {
-        continue;
-      }
-
-      const prevRelation = otherPerson.Relations.find(
-        ({ person: prevPerson }) => prevPerson === person
-      );
-
-      if (prevRelation) {
-        person.Relations.push({ n: prevRelation.n, person: otherPerson });
-        continue;
-      }
-
-      const level = findRelationLevel(person, otherPerson, persons);
-
-      if (level > 0) {
-        person.Relations.push({ n: level, person: otherPerson });
-      }
-    }
-  }
-}
-
-// Helpers
 function findRelationLevel(
   personA: Person,
   personB: Person,
   people: Person[],
   relations: Set<Person> = new Set(),
-  level: number = 0,
-  maxDepth: number = Infinity
+  level: number = 0
 ): number {
   if (personA === personB) {
     return level;
   }
 
-  if (level >= maxDepth || relations.has(personA)) {
+  if (relations.has(personA)) {
     return -1;
   }
 
@@ -111,8 +74,7 @@ function findRelationLevel(
         personB,
         people,
         relations,
-        level + 1,
-        maxDepth
+        level + 1
       );
       if (result !== -1) {
         return result;
