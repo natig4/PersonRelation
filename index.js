@@ -25,11 +25,11 @@ function init(persons) {
     setRelations(people);
 }
 init([
-    new Person(new Name('Grace', 'Hopper'), new Address('', 'New York')),
-    new Person(new Name('Alan', 'Turing'), new Address('', 'Bletchley Park')),
-    new Person(new Name('Joan', 'Clarke'), new Address('', 'Bletchley Park')),
-    new Person(new Name('Joan', 'Clarke'), new Address('', 'London')),
-    new Person(new Name('Alan', 'Turing'), new Address('', 'Cambridge')),
+    new Person(new Name("Grace", "Hopper"), new Address("", "New York")),
+    new Person(new Name("Alan", "Turing"), new Address("", "Bletchley Park")),
+    new Person(new Name("Joan", "Clarke"), new Address("", "Bletchley Park")),
+    new Person(new Name("Joan", "Clarke"), new Address("", "London")),
+    new Person(new Name("Alan", "Turing"), new Address("", "Cambridge")),
 ]);
 function FindMinRelationLevel(personA, personB) {
     const relation = personA.Relations.find(({ person }) => person === personB);
@@ -41,11 +41,17 @@ function setRelations(persons) {
     for (const person of persons) {
         person.Relations = [];
         for (const otherPerson of persons) {
-            if (person !== otherPerson) {
-                const level = findRelationLevel(person, otherPerson, persons);
-                if (level !== -1) {
-                    person.Relations.push({ n: level, person: otherPerson });
-                }
+            if (person === otherPerson) {
+                continue;
+            }
+            const prevRelation = otherPerson.Relations.find(({ person: prevPerson }) => prevPerson === person);
+            if (prevRelation) {
+                person.Relations.push({ n: prevRelation.n, person: otherPerson });
+                continue;
+            }
+            const level = findRelationLevel(person, otherPerson, persons);
+            if (level > 0) {
+                person.Relations.push({ n: level, person: otherPerson });
             }
         }
     }
